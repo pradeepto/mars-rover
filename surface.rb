@@ -6,13 +6,6 @@ class Surface
     @max_x = x
     @max_y = y
   end
-  
-  def register_rover rover
-    raise "RoverOutOfSurfaceBoundsException" if f rover.position.x > max_x or rover.position.y > max_y
-    @rovers[rover]= rover.position
-  end
-
-
 end
 
 class Position
@@ -32,36 +25,41 @@ end
 @@bearings = ['N','E','S','W']
 
 class Rover
-  attr_accessor :position 
+  attr_accessor :position,:surface
 
-  def initialize(position)
+  def initialize(position,surface)
     @position = position
+    @surface  = surface
+  end
+
+  def check_lower_bound value
+    raise "OutOfSurfaceBounds" if value.zero?
+  end
+
+  def check_upper_x_bound x
+    raise "OutOfSurfaceBounds" if x >= surface.max_x
+  end
+
+  def check_upper_y_bound y
+    raise "OutOfSurfaceBounds" if y >= surface.max_y
   end
 
   def move
     case position.bearing
-    when 'N' then  position.y= position.y + 1
-    when 'S' then  position.y= position.y - 1
-    when 'E' then  position.x= position.x + 1
-    when 'W' then  position.x= position.x - 1
+    when 'N' then  check_upper_y_bound(position.y); position.y= position.y + 1
+    when 'S' then  check_lower_bound(position.y)  ; position.y= position.y - 1
+    when 'E' then  check_upper_x_bound(position.x); position.x= position.x + 1
+    when 'W' then  check_lower_bound(position.x)  ; position.x= position.x - 1
     end  
     position
   end
-  
-  def change_direction(new_direction)
+
+  def change_direction(direction)
     current_bearing_index = @@bearings.index(position.bearing)
-    if new_direction == 'R'
-      if @@bearings[current_bearing_index] == 'W' 
-         position.bearing= 'N'
-      else
-         position.bearing= @@bearings[current_bearing_index+1]         
-      end
-    else #for new_direction == 'L' 
-      if @@bearings[current_bearing_index] == 'N'
-         position.bearing= 'W'
-      else
-         position.bearing= @@bearings[current_bearing_index-1]
-      end  
+    if direction == 'R'
+       position.bearing= @@bearings[(current_bearing_index + 1) % 4]
+    else #for new_direction == 'L'
+       position.bearing= @@bearings[(current_bearing_index - 1) % 4]
     end 
     position
   end
@@ -78,12 +76,16 @@ class Rover
 end
 
 plateau = Surface.new(5,5)
-mars_rover = Rover.new(Position.new(1,2,'N'))
+mars_rover = Rover.new(Position.new(1,2,'N'),plateau)
 mars_rover.control('LMLMLMLMM')
 puts mars_rover.position
 
-mars_rover = Rover.new(Position.new(3,3,'E'))
+mars_rover = Rover.new(Position.new(3,3,'E'),plateau)
 mars_rover.control('MMRMMRMRRM')
+puts mars_rover.position
+
+mars_rover = Rover.new(Position.new(1,3,'S'),plateau)
+mars_rover.control('MMMMM')
 puts mars_rover.position
 
 
