@@ -10,7 +10,7 @@ end
 
 class Position
   attr_accessor :x,:y,:bearing
-  
+
   def initialize(x,y,bearing)
     @x = x
     @y = y
@@ -50,7 +50,7 @@ class Rover
     when 'S' then  check_lower_bound(position.y)  ; position.y= position.y - 1
     when 'E' then  check_upper_x_bound(position.x); position.x= position.x + 1
     when 'W' then  check_lower_bound(position.x)  ; position.x= position.x - 1
-    end  
+    end
     position
   end
 
@@ -60,7 +60,7 @@ class Rover
        position.bearing= @@bearings[(current_bearing_index + 1) % 4]
     else #for new_direction == 'L'
        position.bearing= @@bearings[(current_bearing_index - 1) % 4]
-    end 
+    end
     position
   end
 
@@ -69,23 +69,23 @@ class Rover
       if command == 'M'
         move
       else
-        change_direction(command)    
+        change_direction(command)
       end
     end
   end
 end
 
-plateau = Surface.new(5,5)
-mars_rover = Rover.new(Position.new(1,2,'N'),plateau)
-mars_rover.control('LMLMLMLMM')
-puts mars_rover.position
-
-mars_rover = Rover.new(Position.new(3,3,'E'),plateau)
-mars_rover.control('MMRMMRMRRM')
-puts mars_rover.position
-
-mars_rover = Rover.new(Position.new(1,3,'S'),plateau)
-mars_rover.control('MMMMM')
-puts mars_rover.position
-
-
+#plateau = Surface.new(5,5)
+#mars_rover = Rover.new(Position.new(1,2,'N'),plateau)
+#mars_rover.control('LMLMLMLMM')
+#puts mars_rover.position
+#
+#mars_rover = Rover.new(Position.new(3,3,'E'),plateau)
+#mars_rover.control('MMRMMRMRRM')
+#puts mars_rover.position
+#
+#mars_rover = Rover.new(Position.new(1,3,'S'),plateau)
+#mars_rover.control('MMMMM')
+#puts mars_rover.position
+#
+#
